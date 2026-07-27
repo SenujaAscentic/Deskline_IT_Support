@@ -19,6 +19,17 @@ export const requests: Request[] = [
     createdAt: "2026-07-20T09:00:00Z",
     updatedAt: "2026-07-20T09:00:00Z",
   },
+  {
+    id: "r2",
+    title: "Mouse Not working",
+    status: "open",
+    priority: "high",
+    category: "hardware",
+    requesterId: "u2",
+    assigneeId: null,
+    createdAt: "2026-07-20T09:00:00Z",
+    updatedAt: "2026-07-20T09:00:00Z",
+  },
   
 ];
 
