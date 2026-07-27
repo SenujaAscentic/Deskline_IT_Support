@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Badge } from "../../shared/Badge";
 import type { Request } from "./types";
 
@@ -10,7 +11,10 @@ export function RequestList({ requests }: Props) {
     <ul className="request-list">
       {requests.map((r) => (
         <li key={r.id} className="request-row">
-          <span className="request-title">{r.title}</span>
+          <Link to={`/requests/${r.id}`} className="request-titile">
+          {r.title}
+          </Link>
+          
 
           <div className="request-badges">
             <Badge variant={{ kind: "status", value: r.status }}>{r.status}</Badge>
