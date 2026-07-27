@@ -1,4 +1,5 @@
 // src/features/requests/RequestDetail.tsx
+import { Badge } from "../../shared/Badge";
 import type { Request } from "./types";
 
 type Props = {
@@ -9,9 +10,12 @@ export function RequestDetail({ request }: Props) {
   return (
     <div className="request-detail">
       <h3>{request.title}</h3>
-      <p>Status: {request.status}</p>
-      <p>Priority: {request.priority}</p>
-      <p>Category: {request.category}</p>
+
+      <div className="request-badges">
+        <Badge variant={{ kind: "status", value: request.status }}>{request.status}</Badge>
+        <Badge variant={{ kind: "priority", value: request.priority }}>{request.priority}</Badge>
+        <Badge variant={{ kind: "category", value: request.category }}>{request.category}</Badge>
+      </div>
     </div>
   );
 }
