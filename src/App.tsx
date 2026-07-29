@@ -1,14 +1,26 @@
 import "./app/shared/theme.css";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./app/AppShell";
-import { MyRequestsPage } from "./app/features/requests/MyRequestsPage";
-import { RequestDetailPage } from "./app/features/requests/RequestDetailPage";
+import { MyRequestsPage } from "./app/features/requests/pages/MyRequestsPage";
+import { RequestDetailPage } from "./app/features/requests/pages/RequestDetailPage";
+import { LoginPage } from "./app/features/auth/LoginPage";
+import { QueuePage } from "./app/features/requests/pages/QueuePage";
 
 function App() {
   return (
+  <BrowserRouter>
     <AppShell>
-      <MyRequestsPage />
-      <RequestDetailPage />
+      <Routes>
+        <Route path = "/login" element={<LoginPage/>}/>
+        
+        <Route path="/my-requests" element={<MyRequestsPage/>}/>
+        <Route path="/queue" element={<QueuePage/>}/>
+        <Route path="/requests/:id" element={<RequestDetailPage />} />
+        <Route path="*" element={<Navigate to="/my-requests" replace />} />
+      </Routes>
+      
     </AppShell>
+  </BrowserRouter>
   );
 }
 
