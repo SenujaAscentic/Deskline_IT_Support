@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import { requests } from "./data";
-import { RequestDetail } from "./RequestDetail";
+import { requests } from "../data";
+import { RequestDetail } from "../components/RequestDetail";
 
 export function RequestDetailPage() {
   const {id}= useParams();

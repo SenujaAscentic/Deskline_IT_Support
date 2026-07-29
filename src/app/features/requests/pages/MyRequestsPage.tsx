@@ -1,7 +1,7 @@
-import { requests } from "./data";
-import { useRequestFilters } from "./useRequestFilters";
-import { RequestFilters } from "./RequestFilters";
-import { RequestList } from "./RequestList";
+import { requests } from "../data";
+import { useRequestFilters } from "../hooks/useRequestFilters";
+import { RequestFilters } from "../components/RequestFilters";
+import { RequestList } from "../components/RequestList";
 
 export function MyRequestsPage() {
   const {

@@ -1,4 +1,4 @@
-import type { Status, Priority, Category } from "./types";
+import type { Status, Priority, Category } from "../types";
 
 type Props = {
   status: Status | "all";

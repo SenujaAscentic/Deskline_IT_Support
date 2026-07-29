@@ -1,5 +1,5 @@
 // src/app/features/requests/AssigneeFilter.tsx
-import type { AssigneeFilter as AssigneeFilterValue } from "./useQueueFilters";
+import type { AssigneeFilter as AssigneeFilterValue } from "../hooks/useQueueFilters";
 
 type Props = {
   value: AssigneeFilterValue;

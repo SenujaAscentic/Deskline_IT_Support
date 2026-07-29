@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { Badge } from "../../shared/Badge";
-import type { Request } from "./types";
+import { Badge } from "../../../shared/Badge";
+import type { Request } from "../types";
 
 type Props = {
   requests: Request[];

@@ -1,9 +1,9 @@
 // src/app/features/requests/QueuePage.tsx
-import { requests } from "./data";
-import { useQueueFilters } from "./useQueueFilters";
-import { RequestFilters } from "./RequestFilters";
-import { AssigneeFilter } from "./AssigneeFilter";
-import { RequestList } from "./RequestList";
+import { requests } from "../data";
+import { useQueueFilters } from "../hooks/useQueueFilters";
+import { RequestFilters } from "../components/RequestFilters";
+import { AssigneeFilter } from "../components/AssigneeFilter";
+import { RequestList } from "../components/RequestList";
 
 // TODO Day 6: replace with the real authenticated user from auth state.
 const CURRENT_USER_ID_STUB = "u2";
