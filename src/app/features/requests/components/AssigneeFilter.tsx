@@ -8,10 +8,12 @@ type Props = {
 
 export function AssigneeFilter({ value, onChange }: Props) {
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value as AssigneeFilterValue)}>
-      <option value="all">All assignees</option>
-      <option value="unassigned">Unassigned</option>
-      <option value="me">Assigned to me</option>
-    </select>
+    <label htmlFor="assignee-filter">Assignee
+      <select id="assignee-filter" value={value} onChange={(e) => onChange(e.target.value as AssigneeFilterValue)}>
+        <option value="all">All assignees</option>
+        <option value="unassigned">Unassigned</option>
+        <option value="me">Assigned to me</option>
+      </select>
+    </label>
   );
 }
