@@ -1,0 +1,146 @@
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.6;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.badge--status-open      { background: #dbeafe; color: #1e40af; }
+.badge--status-pending   { background: #fef3c7; color: #92400e; }
+.badge--status-closed    { background: #e5e7eb; color: #374151; }
+.badge--status-cancelled { background: #fee2e2; color: #991b1b; }
+
+.badge--priority-low     { background: #e5e7eb; color: #374151; }
+.badge--priority-medium  { background: #fef3c7; color: #92400e; }
+.badge--priority-high    { background: #fee2e2; color: #991b1b; }
+
+.badge--category-hardware   { background: #ede9fe; color: #5b21b6; }
+.badge--category-software   { background: #dbeafe; color: #1e40af; }
+.badge--category-facilities { background: #d1fae5; color: #065f46; }
+.badge--category-access     { background: #fce7f3; color: #9d174d; }
+
+/* Request list */
+.request-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  container-type: inline-size;
+  container-name: request-list;
+}
+
+.request-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+  transition: border-color 0.15s ease;
+}
+
+.request-row:hover {
+  border-color: var(--color-accent);
+}
+
+@container request-list (max-width: 480px) {
+  .request-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.request-title {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.request-title:hover {
+  text-decoration: underline;
+}
+
+.request-badges {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-bottom: var(--space-4);
+}
+
+.back-link:hover {
+  color: var(--color-text);
+}
+
+.request-detail {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.request-detail h3 {
+  font-size: 1.2rem;
+  
+}
+
+.request-actions {
+  margin-top: var(--space-4);
+}
+
+/* Confirm dialog */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 0.15s ease;
+  z-index: 100;
+}
+
+.dialog {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  min-width: 280px;
+  max-width: 400px;
+  animation: dialog-in 0.15s ease;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

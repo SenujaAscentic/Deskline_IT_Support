@@ -1,5 +1,5 @@
 // src/components/Badge.tsx
-import type { Status, Priority, Category } from "../features/requests/types";
+import type { Status, Priority, Category } from "../types";
 
 type BadgeVariant =
   | { kind: "status"; value: Status }

@@ -1,6 +1,6 @@
 // src/app/features/requests/useQueueFilters.ts
 import { useState } from "react";
-import type { Request } from "./types";
+import type { Request } from "../types";
 import { useRequestFilters } from "./useRequestFilters";
 
 export type AssigneeFilter = "all" | "unassigned" | "me";

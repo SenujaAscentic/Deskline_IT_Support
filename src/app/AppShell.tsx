@@ -1,5 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useTheme } from "./shared/useTheme";
+import { useReducedMotion } from "./shared/useReducedMotion";
+import {ToggleSwitch} from "./shared/components/ToggleSwitch";
 
 type Props = {
   children: React.ReactNode;
@@ -7,6 +9,8 @@ type Props = {
 
 export function AppShell({ children }: Props) {
   const { theme, toggleTheme } = useTheme();
+
+  const { reduced,toggleReducedMotion} = useReducedMotion();
 
   return (
     <div className="app-shell">
@@ -18,9 +22,10 @@ export function AppShell({ children }: Props) {
             <NavLink to="/requests/new">New Request</NavLink>
             <NavLink to="/login">Log in</NavLink>
         </nav>
-        <button onClick={toggleTheme} aria-pressed={theme === "dark"}>
-          {theme === "dark" ? "🌙 Dark mode" : "☀️ Light mode"}
-        </button>
+         <div className="app-controls">
+          <ToggleSwitch checked={theme === "dark"} onChange={toggleTheme} label="Dark mode" />
+          <ToggleSwitch checked={reduced} onChange={toggleReducedMotion} label="Reduce motion" />
+        </div>
       </header>
       <main>{children}</main>
     </div>

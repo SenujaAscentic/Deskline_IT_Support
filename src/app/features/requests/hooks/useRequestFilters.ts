@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { Request, Status, Priority, Category } from "./types";
-import { filterRequests } from "./filterRequests";
+import type { Request, Status, Priority, Category } from "../types";
+import { filterRequests } from "../filterRequests";
 import { useSearchParams } from "react-router-dom";
 
 export function useRequestFilters(requests: Request[]) {
