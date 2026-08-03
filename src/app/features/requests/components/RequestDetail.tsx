@@ -1,5 +1,5 @@
 // src/features/requests/RequestDetail.tsx
-import { Badge } from "../../../shared/Badge";
+import { Badge } from "./Badge";
 import type { Request } from "../types";
 
 type Props = {
