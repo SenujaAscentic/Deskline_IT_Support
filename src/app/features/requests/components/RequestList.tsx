@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Badge } from "../../../shared/Badge";
+import { Badge } from "./Badge";
 import type { Request } from "../types";
 
 type Props = {
@@ -11,7 +11,7 @@ export function RequestList({ requests }: Props) {
     <ul className="request-list">
       {requests.map((r) => (
         <li key={r.id} className="request-row">
-          <Link to={`/requests/${r.id}`} className="request-titile">
+          <Link to={`/requests/${r.id}`} className="request-title">
           {r.title}
           </Link>
           
