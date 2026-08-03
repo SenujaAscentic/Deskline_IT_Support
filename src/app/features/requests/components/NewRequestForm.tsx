@@ -118,7 +118,7 @@ export function NewRequestForm({ submitting, onSubmit }: Props) {
         {touched.priority && errors.priority && <p className="field-error">{errors.priority}</p>}
       </div>
 
-      <button type="submit" disabled={!isValid || submitting}>
+      <button className="btn btn--primary" type="submit" disabled={!isValid || submitting}>
         {submitting ? "Creating…" : "Create request"}
       </button>
     </form>
