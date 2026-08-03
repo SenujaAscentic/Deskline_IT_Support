@@ -7,6 +7,7 @@ import { LoadingState } from "../../../shared/components/LoadingState";
 import { ErrorState } from "../../../shared/components/ErrorState";
 import { EmptyState } from "../../../shared/components/EmptyState";
 import { NoMatchesState } from "../../../shared/components/NoMatchesState";
+import { Link } from "react-router-dom";
 
 export function MyRequestsPage() {
 
@@ -29,7 +30,12 @@ export function MyRequestsPage() {
 
   return (
     <section>
-      <h2>My Requests</h2>
+      <div className="page-header">
+        <h2>My Requests</h2>
+        <Link to="/requests/new" className="btn btn--primary">
+          + New request
+        </Link>
+      </div>
       <RequestFilters
         status={status}
         priority={priority}
@@ -47,7 +53,7 @@ export function MyRequestsPage() {
         <NoMatchesState/>
       ):<RequestList requests={visibleRequests}/>
       }
-      <RequestList requests={visibleRequests} />
+      
     </section>
   );
 }
