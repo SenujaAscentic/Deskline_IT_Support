@@ -127,12 +127,93 @@ because:
   dependencies, sufficient for this REST contract's size), with `axios`
   only added if a specific `fetch` limitation is hit.
 
+### Day 4
+
+- **Fake async data layer**: added `api.ts` (returns `Promise<Request[]>`)
+  and `useRequestsData` to give My Requests/Queue genuine loading and error
+  states, per the spec's own "fixtures + fake async" guidance for Days
+  1–4. `api.ts` is intentionally shaped like a real fetch call so Day 5
+  can replace its internals without changing any caller.
+- **Create request form**: inline validation with a `touched` map so
+  errors only appear after a field has been interacted with (or on
+  submit, which touches every field at once). Submit is disabled while
+  invalid or while a simulated submission is in flight, preventing
+  double-submit.
+- **Confirm-before-cancel**: built one reusable `ConfirmDialog` (not a
+  cancel-specific one), since the spec treats Cancel and Close as "the
+  same kind of interaction" — Day 6's admin Close action will reuse this
+  same component. Its styling lives in `features/requests/requests.css`
+  rather than `shared/styles/`, since only the requests feature triggers
+  it today; it'll move to shared styling only if a second feature
+  genuinely needs a dialog.
+- **Reduce motion**: toggle persists via `localStorage`, same pattern as
+  the theme toggle. On a fresh visit with no saved choice, it defers to
+  the OS `prefers-reduced-motion` setting; once the user explicitly
+  toggles it, their in-app choice takes priority. A
+  `@media (prefers-reduced-motion: reduce)` rule is kept as a fallback for
+  the brief window before React mounts and sets `data-motion` itself.
+- **Micro-interactions (3)**: confirm dialog open (fade + scale), badge
+  color transition on status change, disabled-button opacity fade during
+  form submission — all neutralized instantly when reduce motion is on,
+  with no per-component changes needed, since the override is a single
+  blanket rule (`[data-motion="reduced"] * { transition: none; animation:
+  none }`).
+- **Labeled inputs**: every filter control and form field uses a real
+  `<label htmlFor>` / `id` pairing, not just placeholder text, so screen
+  readers announce each control correctly.
+- **CSS restructure**: split the single `theme.css` into layered files
+  under `shared/styles/` (`tokens`, `base`, `layout`, `buttons`, `forms`,
+  `states`, `motion`), imported in that dependency order — general/token
+  files first, feature-specific and motion-override files last. Feature-
+  specific styling (badges, request cards, the confirm dialog) lives in
+  `features/requests/requests.css` instead, following the same "does this
+  belong to one feature or many" test already used for folder structure.
+- **Introduced a spacing scale and button/toggle component system**
+  (`--space-1`…`--space-6`, `.btn`/`.btn--primary`/`.btn--danger`, a
+  custom `ToggleSwitch` using `role="switch"`/`aria-checked`) so
+  interactive controls look and behave consistently across screens,
+  rather than each button/toggle being styled ad hoc per component.
+- **Folder consistency fix**: moved `Badge` from `shared/components/` into
+  `features/requests/components/`, alongside its CSS. It's typed directly
+  against `Status`/`Priority`/`Category` from the requests feature and is
+  only ever consumed by pages within that same feature (My Requests,
+  Queue) — being used on two *pages* isn't the same as being used by two
+  *features*, so it didn't actually meet the bar for `shared/`. It would
+  move back if a second, unrelated feature needed the same colored-pill
+  pattern later.
+
+### Dependencies
+
+No new dependencies added this session — `react-hook-form` and `zod` were
+considered for the create-request form but not adopted: at 4–5 fields with
+simple rules, a hand-written `validate()` function is equally clear with
+zero added dependencies, and introducing react-hook-form's uncontrolled-
+input model would sit inconsistently next to the plain `useState`
+controlled-input pattern used everywhere else in the app (filters, toggles).
+`zod` remains a real candidate for Day 5, specifically for validating
+API responses at the UI/API type boundary — a different problem than form
+validation.
+
+Considered Tailwind CSS again for the styling pass and again did not
+adopt it — by this point the app has a working token system, a component
+library, and CSS files organized to mirror the component folder structure;
+switching frameworks now would mean rewriting already-understood, working
+styling rather than extending it, which conflicts with the "no rewrites"
+principle and the "you should be able to explain any code" assessment
+criterion.
+
 ## Known limitations (expected at this stage)
 
-- Nav links show all five routes to everyone; role-aware navigation and
-  route protection arrive Day 6.
-- Queue's "assigned to me" filter uses a hardcoded stub user id
-  (`CURRENT_USER_ID_STUB`) until real auth exists (Day 6).
-- `/login` and `/requests/new` are placeholder pages; real forms arrive
-  Day 6 and Day 4 respectively.
-- Data is still fixture-only; no API integration yet (Day 5).
+- Cancelling a request only updates local component state — it resets on
+  reload. Real persistence via `PATCH /requests/:id` arrives Day 5.
+- Creating a request simulates a delay and redirects, but doesn't actually
+  add the new request to the list yet — same reason as above.
+- The cancel button is gated on request status only, not on "is this
+  actually the request's owner" — anyone, including staff viewing from
+  Queue, currently sees it on any open request. Full requester-only +
+  ownership enforcement (and the matching API 403) arrives Day 6 once a
+  logged-in user exists.
+- `fetchRequests()` never actually rejects yet, since it's reading static
+  fixtures — the error UI is built and ready, but a genuine failure case
+  only becomes possible once Day 5's real API can actually fail.
+- `/login` is still a placeholder page; the real form arrives Day 6.
