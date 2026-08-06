@@ -2,17 +2,17 @@
 import { useRequestFilters } from "../hooks/useRequestFilters";
 import { RequestFilters } from "../components/RequestFilters";
 import { RequestList } from "../components/RequestList";
-import { useRequestsData } from "../hooks/useRequestsData";
 import { LoadingState } from "../../../shared/components/LoadingState";
 import { ErrorState } from "../../../shared/components/ErrorState";
 import { EmptyState } from "../../../shared/components/EmptyState";
 import { NoMatchesState } from "../../../shared/components/NoMatchesState";
 import { Link } from "react-router-dom";
+import { useRequestsQuery } from "../hooks/useRequestsQuery";
 
 export function MyRequestsPage() {
 
-  const {state,retry}= useRequestsData();
-  const requests = state.status=== "success" ? state.data: [];
+  const { data , isLoading , isError , refetch}= useRequestsQuery();
+  const requests = data ?? [];
   const {
     status,
     priority,
@@ -25,8 +25,8 @@ export function MyRequestsPage() {
     visibleRequests,
   } = useRequestFilters(requests);
 
-  if(state.status === "loading") return <LoadingState/>
-  if(state.status === "error") return <ErrorState onRetry={retry}/>
+  if(isLoading) return <LoadingState/>
+  if(isError) return <ErrorState onRetry={refetch}/>
 
   return (
     <section>
