@@ -1,24 +1,38 @@
 // src/app/features/requests/pages/RequestDetailPage.tsx
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { requests } from "../data";
+import { useRequestDetailQuery } from "../hooks/useRequestDetailQuery";
+import { useUpdateRequestMutation } from "../hooks/useUpdateRequestMutation";
 import { RequestDetail } from "../components/RequestDetail";
 import { ConfirmDialog } from "../../../shared/components/ConfirmDialog";
+import { LoadingState } from "../../../shared/components/LoadingState";
+import { ErrorState } from "../../../shared/components/ErrorState";
+import { MessageThread } from "../components/MessageThread";
+import { CommentBox } from "../components/CommentBox";
+import { useUserNames } from "../hooks/useUserNames";
 
 export function RequestDetailPage() {
   const { id } = useParams();
-  const fixtureMatch = requests.find((r) => r.id === id);
-
-  const [request, setRequest] = useState(fixtureMatch);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  
+  const { data, isLoading, isError, refetch } = useRequestDetailQuery(id);
+  const userNames = useUserNames();
+  // Hook is called unconditionally, every render — required by React's rules.
+  // Falls back to "" until data exists; nothing calls `mutate` before that anyway.
+  const { mutate: updateRequest } = useUpdateRequestMutation(data?.request.id ?? "");
 
-  if (!request) {
-    return <p>Request not found.</p>;
-  }
+  if (isLoading) return <LoadingState />;
+  if (isError) return <ErrorState onRetry={refetch} />;
+  if (!data) return <p>Request not found.</p>;
+
+  const { request , messages } = data;
+  const canComment = request.status === "open" || request.status === "pending";
 
   function handleConfirmCancel() {
-    setRequest((r) => (r ? { ...r, status: "cancelled" } : r));
-    setConfirmOpen(false);
+    updateRequest(
+      { status: "cancelled" },
+      { onSuccess: () => setConfirmOpen(false) }
+    );
   }
 
   return (
@@ -40,6 +54,11 @@ export function RequestDetailPage() {
           </button>
         </div>
       )}
+      <div className = "message-section">
+        <h4>Activity</h4>
+        <MessageThread messages = {messages} userNames ={userNames} />
+        <CommentBox requestId={request.id} canComment={canComment} />
+      </div>
 
       <ConfirmDialog
         open={confirmOpen}
