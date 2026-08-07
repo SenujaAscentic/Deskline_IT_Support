@@ -107,6 +107,34 @@
   margin-top: var(--space-4);
 }
 
+/* requests.css */
+.request-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin: var(--space-3) 0 0 0;
+}
+
+.request-meta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.request-meta dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.request-meta dd {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
 .message-section {
   margin-top: var(--space-6);
 }
@@ -147,6 +175,23 @@
   margin-top: var(--space-4);
 }
 
+
+.request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.reassign-select {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
 /* Confirm dialog */
 .dialog-backdrop {
   position: fixed;
