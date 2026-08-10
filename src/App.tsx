@@ -17,20 +17,50 @@ import { RequestDetailPage } from "./app/features/requests/pages/RequestDetailPa
 import { LoginPage } from "./app/features/auth/LoginPage";
 import { QueuePage } from "./app/features/requests/pages/QueuePage";
 import { NewRequestPage } from "./app/features/requests/pages/NewRequestPage";
+import { ProtectedRoute } from "./app/shared/components/ProtectedRoute";
 
 function App() {
   return (
   <BrowserRouter>
     <AppShell>
       <Routes>
-        <Route path = "/login" element={<LoginPage/>}/>
-        
-        <Route path="/my-requests" element={<MyRequestsPage/>}/>
-        <Route path="/queue" element={<QueuePage/>}/>
-        <Route path="/requests/new" element={<NewRequestPage/>}/>
-        <Route path="/requests/:id" element={<RequestDetailPage />} />
-        <Route path="*" element={<Navigate to="/my-requests" replace />} />
-      </Routes>
+          <Route path="/login" element={<LoginPage />} />
+
+          <Route
+            path="/my-requests"
+            element={
+              <ProtectedRoute allowedRoles={["requester"]}>
+                <MyRequestsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/queue"
+            element={
+              <ProtectedRoute allowedRoles={["technician", "admin"]}>
+                <QueuePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/requests/new"
+            element={
+              <ProtectedRoute allowedRoles={["requester"]}>
+                <NewRequestPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/requests/:id"
+            element={
+              <ProtectedRoute>
+                <RequestDetailPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/my-requests" replace />} />
+        </Routes>
       
     </AppShell>
   </BrowserRouter>
