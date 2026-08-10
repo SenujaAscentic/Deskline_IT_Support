@@ -2,7 +2,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "./shared/useTheme";
 import { useReducedMotion } from "./shared/useReducedMotion";
 import {ToggleSwitch} from "./shared/components/ToggleSwitch";
-import { DevRoleSwitcher } from "./features/auth/DevRoleSwitcher";
 import { useSession } from "./features/auth/useSession";
 import { setSession } from "./features/auth/session";
 
@@ -31,9 +30,10 @@ export function AppShell({ children }: Props) {
             <>
             {session.role === "requester" && (
               <>
-                <NavLink to="/requests/new">New Request</NavLink>
                 <NavLink to="/my-requests">My Requests</NavLink>
-                </>
+                <NavLink to="/requests/new">New Request</NavLink>
+                
+              </>
               )}
               
               {(session.role === "technician" || session.role === "admin") && (
@@ -54,7 +54,6 @@ export function AppShell({ children }: Props) {
           
         </div>
       </header>
-      <DevRoleSwitcher />
       <main>{children}</main>
     </div>
   );
