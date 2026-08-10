@@ -3,13 +3,14 @@
 import { useQueueFilters } from "../hooks/useQueueFilters";
 import { RequestFilters } from "../components/RequestFilters";
 import { AssigneeFilter } from "../components/AssigneeFilter";
-import { RequestList } from "../components/RequestList";
+//import { RequestList } from "../components/RequestList";
 import { LoadingState } from "../../../shared/components/LoadingState";
 import { ErrorState } from "../../../shared/components/ErrorState";
 import { EmptyState } from "../../../shared/components/EmptyState";
 import { NoMatchesState } from "../../../shared/components/NoMatchesState";
 import { useSession } from "../../auth/useSession";
 import { useRequestsQuery } from "../hooks/useRequestsQuery";
+import { VirtualizedRequestList } from "../components/VirtualizedRequestList";
 
 // TODO Day 6: replace with the real authenticated user from auth state.
 
@@ -48,7 +49,7 @@ export function QueuePage() {
       ) : visibleRequests.length === 0 ? (
         <NoMatchesState />
       ) : (
-        <RequestList requests={visibleRequests} />
+        <VirtualizedRequestList requests={visibleRequests} />
       )}
     </section>
   );
