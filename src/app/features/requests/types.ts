@@ -21,3 +21,10 @@ export type Request = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type CreateRequestInput = {
+  title: string;
+  description: string;
+  category: Category;
+  priority: Priority;
+};
