@@ -1,9 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// src/mocks/handlers.ts
 import { http, HttpResponse } from "msw";
-import { users, seedUsers, requestsDb, messagesDb, type DbRequest } from "./db";
+import { users, seedUsers, requestsDb, messagesDb, type DbUser, type DbRequest } from "./db";
 
-function currentUser(request: globalThis.Request) {
+function toSafeUser(user: DbUser) {
+  return { id: user.id, name: user.name, email: user.email, role: user.role };
+}
+
+function currentUser(request: Request) {
   const auth = request.headers.get("Authorization");
   const id = auth?.startsWith("Bearer dev-token-") ? auth.replace("Bearer dev-token-", "") : null;
   return users.find((u) => u.id === id) ?? null;
@@ -13,30 +15,23 @@ export const handlers = [
   http.post("/login", async ({ request }) => {
     const body = (await request.json()) as { email: string; password: string };
     const user = seedUsers.find((u) => u.email === body.email && u.password === body.password);
-    if (!user) {
-      return HttpResponse.json({ message: "Invalid email or password." }, { status: 401 });
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...safeUser } = user;
-    return HttpResponse.json({ user: safeUser, token: `dev-token-${user.id}` });
+    if (!user) return HttpResponse.json({ message: "Invalid email or password." }, { status: 401 });
+    return HttpResponse.json({ user: toSafeUser(user), token: `dev-token-${user.id}` });
   }),
 
   http.get("/users", ({ request }) => {
     const user = currentUser(request);
     if (!user) return HttpResponse.json({ message: "Unauthorized" }, { status: 401 });
     if (user.role === "requester") return HttpResponse.json({ message: "Forbidden" }, { status: 403 });
-
-    return HttpResponse.json(users.map(({ password, ...rest }) => rest));
+    return HttpResponse.json(users.map(toSafeUser));
   }),
 
   http.get("/requests", ({ request }) => {
     const user = currentUser(request);
     if (!user) return HttpResponse.json({ message: "Unauthorized" }, { status: 401 });
-
     const visible = user.role === "requester"
       ? requestsDb.filter((r) => r.requesterId === user.id)
       : requestsDb;
-
     return HttpResponse.json(visible);
   }),
 
@@ -50,7 +45,15 @@ export const handlers = [
       return HttpResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    return HttpResponse.json({ ...req, messages: messagesDb.filter((m) => m.requestId === req.id) });
+    const requesterUser = users.find((u) => u.id === req.requesterId);
+    const assigneeUser = req.assigneeId ? users.find((u) => u.id === req.assigneeId) : null;
+
+    return HttpResponse.json({
+      ...req,
+      messages: messagesDb.filter((m) => m.requestId === req.id),
+      requesterName: requesterUser?.name ?? "Unknown",
+      assigneeName: assigneeUser?.name ?? null,
+    });
   }),
 
   http.post("/requests", async ({ request }) => {
@@ -63,7 +66,7 @@ export const handlers = [
     };
     const now = new Date().toISOString();
     const newRequest: DbRequest = {
-      id: `r${requestsDb.length + 1}`,
+      id: `r${Date.now()}`,
       title: body.title,
       status: "open",
       priority: body.priority,
@@ -74,9 +77,23 @@ export const handlers = [
       updatedAt: now,
     };
     requestsDb.unshift(newRequest);
-    messagesDb.push({ id: `${newRequest.id}-m1`, requestId: newRequest.id, authorId: user.id, body: body.description, createdAt: now });
+    messagesDb.push({
+      id: `${newRequest.id}-m1`,
+      requestId: newRequest.id,
+      authorId: user.id,
+      body: body.description,
+      createdAt: now,
+    });
 
-    return HttpResponse.json({ ...newRequest, messages: messagesDb.filter((m) => m.requestId === newRequest.id) }, { status: 201 });
+    return HttpResponse.json(
+      {
+        ...newRequest,
+        messages: messagesDb.filter((m) => m.requestId === newRequest.id),
+        requesterName: user.name,
+        assigneeName: null,
+      },
+      { status: 201 }
+    );
   }),
 
   http.post("/requests/:id/messages", async ({ request, params }) => {
@@ -122,7 +139,21 @@ export const handlers = [
         ((req.status === "open" || req.status === "pending") && body.status === "closed" && user.role === "admin");
 
       if (!legal) return HttpResponse.json({ message: "Forbidden status transition." }, { status: 403 });
+
       req.status = body.status;
+      const systemBody =
+        body.status === "cancelled" ? `Cancelled by ${user.name}.`
+        : body.status === "closed" ? `Closed by ${user.name}.`
+        : null;
+      if (systemBody) {
+        messagesDb.push({
+          id: `${req.id}-m${messagesDb.filter((m) => m.requestId === req.id).length + 1}`,
+          requestId: req.id,
+          authorId: user.id,
+          body: systemBody,
+          createdAt: new Date().toISOString(),
+        });
+      }
     }
 
     if (body.assigneeId !== undefined) {
@@ -134,6 +165,15 @@ export const handlers = [
     }
 
     req.updatedAt = new Date().toISOString();
-    return HttpResponse.json(req);
+
+    const requesterUser = users.find((u) => u.id === req.requesterId);
+    const assigneeUser = req.assigneeId ? users.find((u) => u.id === req.assigneeId) : null;
+
+    return HttpResponse.json({
+      ...req,
+      messages: messagesDb.filter((m) => m.requestId === req.id),
+      requesterName: requesterUser?.name ?? "Unknown",
+      assigneeName: assigneeUser?.name ?? null,
+    });
   }),
 ];

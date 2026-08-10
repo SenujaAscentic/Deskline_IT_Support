@@ -34,4 +34,6 @@ export type ApiMessage = {
 // collections in list responses, so this mirrors that deliberately.
 export type ApiRequestDetail = ApiRequestListItem & {
   messages: ApiMessage[];
+  requesterName: string;
+  assigneeName: string | null;
 };

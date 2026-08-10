@@ -10,10 +10,17 @@ export function toUiMessage(api: ApiMessage): Message {
   return { ...api };
 }
 
-export function toUiRequestDetail(api: ApiRequestDetail): { request: Request; messages: Message[] } {
-  const { messages, ...rest } = api;
+export function toUiRequestDetail(api: ApiRequestDetail): {
+  request: Request;
+  messages: Message[];
+  requesterName: string;
+  assigneeName: string | null;
+} {
+  const { messages, requesterName, assigneeName, ...rest } = api;
   return {
     request: rest,
     messages: messages.map(toUiMessage),
+    requesterName,
+    assigneeName,
   };
 }
