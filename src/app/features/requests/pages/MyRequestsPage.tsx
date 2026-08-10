@@ -8,10 +8,12 @@ import { EmptyState } from "../../../shared/components/EmptyState";
 import { NoMatchesState } from "../../../shared/components/NoMatchesState";
 import { Link } from "react-router-dom";
 import { useRequestsQuery } from "../hooks/useRequestsQuery";
+import {useSession} from "../../auth/useSession";
 
 export function MyRequestsPage() {
 
-  const { data , isLoading , isError , refetch}= useRequestsQuery();
+  const session = useSession();
+  const { data , isLoading , isError , refetch}= useRequestsQuery(session?.userId);
   const requests = data ?? [];
   const {
     status,
