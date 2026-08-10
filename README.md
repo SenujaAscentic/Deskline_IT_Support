@@ -202,18 +202,132 @@ styling rather than extending it, which conflicts with the "no rewrites"
 principle and the "you should be able to explain any code" assessment
 criterion.
 
+### Day 5
+
+- **Mock API**: replaced all fixture-based data access with MSW handlers
+  implementing the full section 7 contract (7 endpoints), backed by an
+  in-memory database seeded with 520 generated requests, 18 users (3 real
+  seed logins + 15 synthetic requesters), and matching messages. Role-
+  based filtering (`GET /requests`) and the full status-lifecycle
+  legality table (`PATCH /requests/:id`) are enforced server-side in the
+  handlers, not just hidden in the UI — this is the real, working half of
+  Day 6's 403 requirement, built ahead of time so Day 6 only needs to add
+  UI-level hiding and feedback on top of already-correct enforcement.
+
+- **Auth stub**: since real login is Day 6, a small session module
+  (`session.ts` + `useSession`, using `useSyncExternalStore` to keep React
+  components in sync with state that lives outside React) simulates a
+  logged-in user, with a temporary `DevRoleSwitcher` for testing role-
+  based behavior before real login exists. Switching sessions clears the
+  entire TanStack Query cache (`queryClient.clear()`, triggered from
+  `setSession` itself) — without this, a role that previously had access
+  to cached data (e.g. staff fetching `/users`) could still read that
+  stale cached data after switching to a role that's supposed to be
+  denied it (e.g. a requester), which was caught while testing name
+  resolution across roles.
+
+- **TanStack Query**: adopted now that a real API exists to manage state
+  against — not earlier, since there was nothing genuine to cache before
+  Day 5. Query keys are scoped by user id (e.g. `["requests", userId]`)
+  so switching sessions is treated as a genuinely different query rather
+  than a stale cache hit on an unrelated user's data; this was a real bug
+  caught mid-build (switching roles updated the highlighted button but
+  not the visible list, until the key was made session-dependent).
+
+- **UI/API type boundary**: `ApiRequestListItem` vs `ApiRequestDetail`
+  deliberately differ — the detail response includes the message thread
+  plus server-resolved `requesterName`/`assigneeName`. Resolving ids to
+  names happens server-side (in the handler, which has unrestricted
+  access to the full user table) rather than client-side, so a requester
+  can see their own request's relevant names correctly without needing
+  the broader `GET /users` access that's intentionally staff-only.
+  `mappers.ts` is the one file that would need to change if a real API's
+  response shape ever diverged from these mocks.
+
+- **Message thread**: built from scratch (never existed pre-Day 5) — a
+  flat, chronological list per request, matching the spec's "no nested/
+  threaded replies" rule. Comment submission is disabled while a mutation
+  is in flight (`isPending`), preventing double-submit. The comment box
+  is entirely absent (not just disabled) once a request is closed/
+  cancelled, per spec. Status changes (cancel/close) generate a real
+  system message server-side, naming the actual actor by name (e.g.
+  "Cancelled by Amara Silva."), generated as a genuine side effect of the
+  real `PATCH` action rather than backfilled fixture data.
+
+- **Role-gated actions**: consolidated into one `RequestActions`
+  component rather than scattering conditionals across the page — it
+  computes each action's visibility from role + status + ownership
+  (matching the spec's action rules table exactly) and reuses one
+  `ConfirmDialog` instance for both cancel and close, since the spec
+  treats them as "the same kind of interaction."
+
+- **Queue performance (500+ rows)**: adopted `@tanstack/react-virtual`
+  (headless — no styled components, so it doesn't conflict with the "no
+  full UI kit" rule) rather than hand-rolling windowing logic or using
+  pagination. Considered pagination as a simpler alternative — no new
+  dependency, and it would have let Queue reuse a single unmodified list
+  component — but the spec frames the requirement in terms of scrolling
+  ("filtering, searching, and *scrolling* the Queue must stay usable"),
+  and pagination interacts awkwardly with combinable filters (unclear
+  what "page 3" means once a filter narrows 520 results to 40). Also
+  considered combining pagination with virtualization, but virtualization
+  already delivers pagination's core benefit (bounded DOM size) without
+  its downsides at this scale — combining both would only matter at a
+  much larger scale requiring server-side pagination to limit what's
+  fetched, not just what's rendered, which isn't the case with a single
+  520-row `GET /requests` response.
+
+- **Row markup consistency across My Requests and Queue**: extracted a
+  single `RequestRow` component, used by both the plain `RequestList`
+  (My Requests) and `VirtualizedRequestList` (Queue), so the two screens'
+  row design is structurally guaranteed to stay identical rather than
+  kept in sync by discipline across two separately-maintained copies.
+  Verified via DevTools that Queue's live DOM row count stays in the
+  ~20-35 range regardless of total list size, confirming virtualization
+  is genuinely active, not just visually similar by coincidence.
+
+### Dependencies
+
+**msw** — used to mock the REST API contract from section 7. Chosen over
+`json-server` specifically because several endpoints need real custom
+logic (role-based filtering, status-lifecycle legality checks, 403s) that
+`json-server` isn't well suited for without extensive custom routing,
+per the spec's own tools table. MSW intercepts real `fetch` calls at the
+browser level, so application code is identical to what it would be
+against a real backend — confirmed directly: swapping to a real backend
+later requires no changes to any component, hook, or page, only to
+`src/mocks/` and one base-URL line in the API client.
+
+**@tanstack/react-query** — adopted once a real API existed to manage
+state against (not earlier — there was no genuine caching problem to
+solve on fixtures). Handles loading/error/retry state, request
+deduplication, and cache invalidation after mutations, replacing what
+would otherwise be several hundred lines of hand-rolled equivalent logic
+across every data-fetching hook.
+
+**@tanstack/react-virtual** — a headless virtualization primitive, not a
+styled component library, so it doesn't conflict with the "no full UI
+kit" restriction — every visual element (rows, badges) is still hand-
+built. Chosen over hand-rolling scroll-position/windowing math, which
+would require correctly handling variable row heights, resize
+recalculation, and overscan buffering — real engineering disproportionate
+to reimplement from scratch for a 2-week project.
+
+Considered `react-hook-form` and `zod` again for the create-request form;
+still not adopted, for the same reasons as Day 4 — the form is small
+enough that hand-written validation remains equally clear with zero
+dependencies.
+
 ## Known limitations (expected at this stage)
 
-- Cancelling a request only updates local component state — it resets on
-  reload. Real persistence via `PATCH /requests/:id` arrives Day 5.
-- Creating a request simulates a delay and redirects, but doesn't actually
-  add the new request to the list yet — same reason as above.
-- The cancel button is gated on request status only, not on "is this
-  actually the request's owner" — anyone, including staff viewing from
-  Queue, currently sees it on any open request. Full requester-only +
-  ownership enforcement (and the matching API 403) arrives Day 6 once a
-  logged-in user exists.
-- `fetchRequests()` never actually rejects yet, since it's reading static
-  fixtures — the error UI is built and ready, but a genuine failure case
-  only becomes possible once Day 5's real API can actually fail.
-- `/login` is still a placeholder page; the real form arrives Day 6.
+- No route protection yet — any role can visit any of the five routes
+  directly by URL; Day 6 adds real login, logout, and protected routing.
+- The dev role switcher (`DevRoleSwitcher`) is temporary scaffolding,
+  deleted once real login exists.
+- `requestsDb`/`messagesDb` are in-memory and reset on a full page
+  reload or dev-server restart — expected for a mock data layer; a real
+  backend would persist this properly.
+- Comment/message deletion is intentionally out of scope — the spec
+  treats the activity thread as an append-only record, consistent with
+  how real support-desk tools treat ticket history, and no action rule
+  in section 5 mentions deleting or editing messages for any role.
