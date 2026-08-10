@@ -34,6 +34,20 @@
   container-type: inline-size;
   container-name: request-list;
 }
+/* requests.css */
+.virtual-list-viewport {
+  height: 600px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  container-type: inline-size;
+  container-name: request-list;
+}
+
+.virtual-row-wrapper {
+  padding-bottom: var(--space-2);
+}
+/* no .request-row overrides — inherits the same card styling used by My Requests */
 
 .request-row {
   display: flex;
