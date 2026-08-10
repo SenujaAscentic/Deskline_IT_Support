@@ -1,5 +1,5 @@
 // src/app/features/requests/useQueueFilters.ts
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Request } from "../types";
 import { useRequestFilters } from "./useRequestFilters";
 
@@ -9,11 +9,13 @@ export function useQueueFilters(requests: Request[], currentUserId: string) {
   const base = useRequestFilters(requests);
   const [assignee, setAssignee] = useState<AssigneeFilter>("all");
 
-  const visibleRequests = base.visibleRequests.filter((r) => {
-    if (assignee === "unassigned") return r.assigneeId === null;
-    if (assignee === "me") return r.assigneeId === currentUserId;
-    return true;
-  });
+  const visibleRequests = useMemo(() => {
+    return base.visibleRequests.filter((r) => {
+      if (assignee === "unassigned") return r.assigneeId === null;
+      if (assignee === "me") return r.assigneeId === currentUserId;
+      return true;
+    });
+  }, [base.visibleRequests, assignee, currentUserId]);
 
   return {
     ...base,
