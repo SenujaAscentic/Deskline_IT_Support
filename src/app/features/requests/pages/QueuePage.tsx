@@ -1,5 +1,5 @@
-// src/app/features/requests/pages/QueuePage.tsx
-import { useRequestsData } from "../hooks/useRequestsData";
+
+// import { useRequestsData } from "../hooks/useRequestsData";
 import { useQueueFilters } from "../hooks/useQueueFilters";
 import { RequestFilters } from "../components/RequestFilters";
 import { AssigneeFilter } from "../components/AssigneeFilter";
@@ -8,22 +8,26 @@ import { LoadingState } from "../../../shared/components/LoadingState";
 import { ErrorState } from "../../../shared/components/ErrorState";
 import { EmptyState } from "../../../shared/components/EmptyState";
 import { NoMatchesState } from "../../../shared/components/NoMatchesState";
+import { useSession } from "../../auth/useSession";
+import { useRequestsQuery } from "../hooks/useRequestsQuery";
 
 // TODO Day 6: replace with the real authenticated user from auth state.
-const CURRENT_USER_ID_STUB = "u2";
+
 
 export function QueuePage() {
-  const { state, retry } = useRequestsData();
-  const requests = state.status === "success" ? state.data : [];
+  const session = useSession();
+  const {data , isLoading , isError , refetch}= useRequestsQuery(session?.userId);
+ 
+  const requests = data ?? [];
 
   const {
     status, priority, category, search, assignee,
     setStatus, setPriority, setCategory, setSearch, setAssignee,
     visibleRequests,
-  } = useQueueFilters(requests, CURRENT_USER_ID_STUB);
+  } = useQueueFilters(requests, session?.userId ?? "");
 
-  if (state.status === "loading") return <LoadingState />;
-  if (state.status === "error") return <ErrorState onRetry={retry} />;
+  if (isLoading) return <LoadingState />;
+  if (isError) return <ErrorState onRetry={refetch} />;
 
   return (
     <section>
