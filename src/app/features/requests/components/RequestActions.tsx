@@ -5,6 +5,7 @@ import type { Session } from "../../auth/session";
 import { useUpdateRequestMutation } from "../hooks/useUpdateRequestMutation";
 import { useStaffList } from "../hooks/useStaffList";
 import { ConfirmDialog } from "../../../shared/components/ConfirmDialog";
+import { ApiError } from "../../../shared/api/client";
 
 type Props = {
   request: Request;
@@ -15,7 +16,7 @@ type ConfirmKind = "cancel" | "close" | null;
 
 export function RequestActions({ request, session }: Props) {
   const [confirmKind, setConfirmKind] = useState<ConfirmKind>(null);
-  const { mutate, isPending } = useUpdateRequestMutation(request.id);
+  const { mutate, isPending , error} = useUpdateRequestMutation(request.id);
   const staffList = useStaffList();
 
   const isStaff = session.role === "technician" || session.role === "admin";
@@ -29,6 +30,12 @@ export function RequestActions({ request, session }: Props) {
   const canAssignToMe = isStaff && isActive && request.assigneeId !== session.userId;
   const canReassign = isAdmin && isActive;
   const canClose = isAdmin && isActive;
+
+  const errorMessage = error instanceof ApiError 
+                ?error.status === 403
+                ? "You don't have permission to perform this action."
+                : "Something went wrong. Please try again."
+                : null;
 
   function handleConfirm() {
     if (confirmKind === "cancel") {
@@ -81,6 +88,8 @@ export function RequestActions({ request, session }: Props) {
           Close request
         </button>
       )}
+      
+      {errorMessage && <p className="field-error">{errorMessage}</p>}
 
       <ConfirmDialog
         open={confirmKind !== null}
