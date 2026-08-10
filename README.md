@@ -318,16 +318,31 @@ still not adopted, for the same reasons as Day 4 — the form is small
 enough that hand-written validation remains equally clear with zero
 dependencies.
 
-## Known limitations (expected at this stage)
+### Day 6
 
-- No route protection yet — any role can visit any of the five routes
-  directly by URL; Day 6 adds real login, logout, and protected routing.
-- The dev role switcher (`DevRoleSwitcher`) is temporary scaffolding,
-  deleted once real login exists.
-- `requestsDb`/`messagesDb` are in-memory and reset on a full page
-  reload or dev-server restart — expected for a mock data layer; a real
-  backend would persist this properly.
-- Comment/message deletion is intentionally out of scope — the spec
-  treats the activity thread as an append-only record, consistent with
-  how real support-desk tools treat ticket history, and no action rule
-  in section 5 mentions deleting or editing messages for any role.
+- **Login/logout**: real `POST /login` mutation, storing a genuine
+  server-issued session (replacing the Day 5 dev stub's hardcoded array).
+  Logout calls the same `setSession(null)` mechanism built in Day 5,
+  which already clears the query cache — no new logic needed there.
+- **Protected routes**: a single `ProtectedRoute` wrapper handles both
+  "must be logged in" and "must be one of these roles," redirecting an
+  unauthenticated visitor to `/login` and a wrongly-roled visitor to
+  their own correct home route (not `/login`, since they're not actually
+  unauthenticated — just in the wrong place).
+- **Three-role UI**: nav links are now conditional on role — a requester
+  never sees "Queue," staff never see "My Requests" or "New Request,"
+  matching the routing table exactly rather than showing every link to
+  everyone and relying on redirects alone.
+- **403 feedback**: mutations surface `ApiError`'s status distinctly —
+  a 403 shows a calm "you don't have permission" message, other failures
+  show a generic retry message. Verified server-side enforcement
+  independent of the UI by calling a forbidden action directly via
+  `fetch` in the console, confirming the real 403 comes from the handler
+  itself, not just from a hidden button.
+- **Retired `DevRoleSwitcher`**: real login now fully covers what it was
+  standing in for.
+
+## Known limitations (expected at this stage)
+- Sessions are stored in memory only (not persisted across a reload) —
+  logging in again is required after a full page refresh. Acceptable for
+  this MVP; the spec doesn't require persisted sessions.
