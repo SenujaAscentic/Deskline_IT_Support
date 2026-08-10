@@ -1,7 +1,8 @@
 // src/app/features/requests/pages/NewRequestPage.tsx
 import { useNavigate } from "react-router-dom";
 import { NewRequestForm } from "../components/NewRequestForm";
-import { useCreateRequestMutation, type CreateRequestInput } from "../hooks/useCreateRequestMutation";
+import { useCreateRequestMutation } from "../hooks/useCreateRequestMutation";
+import type { CreateRequestInput } from "../types";
 
 export function NewRequestPage() {
   const navigate = useNavigate();
