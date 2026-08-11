@@ -9,6 +9,7 @@ type Props = {
   onPriorityChange: (value: Priority | "all") => void;
   onCategoryChange: (value: Category | "all") => void;
   onSearchChange: (value: string) => void;
+  children?: React.ReactNode;
 };
 
 export function RequestFilters({
@@ -20,6 +21,7 @@ export function RequestFilters({
   onPriorityChange,
   onCategoryChange,
   onSearchChange,
+  children,
 }: Props) {
   return (
     <div className="filters-bar">
@@ -65,6 +67,7 @@ export function RequestFilters({
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
+      {children}
     </div>
   );
 }
