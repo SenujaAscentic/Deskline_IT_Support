@@ -8,6 +8,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-5);
+  flex-wrap: wrap;
   padding-bottom: var(--space-4);
   margin-bottom: var(--space-6);
   border-bottom: 1px solid var(--color-border);
@@ -63,24 +64,3 @@ main {
   gap: var(--space-4);
 }
 
-.dev-role-switcher {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  background: var(--color-surface-inset);
-  border-bottom: 1px solid var(--color-border);
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-}
-
-.dev-role-switcher__btn {
-  padding: 4px 10px;
-  font-size: 0.8rem;
-}
-
-.dev-role-switcher__btn.is-active {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: white;
-}
