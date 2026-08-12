@@ -18,6 +18,18 @@ export function VirtualizedRequestList({ requests }: Props) {
   });
 
   return (
+    <>
+    <div className="request-list-legend">
+        <span className="legend-item">
+          <span className="legend-dot legend-dot--status" /> Status
+        </span>
+        <span className="legend-item">
+          <span className="legend-dot legend-dot--priority" /> Priority
+        </span>
+        <span className="legend-item">
+          <span className="legend-dot legend-dot--category" /> Category
+        </span>
+      </div>
     <div ref={parentRef} className="virtual-list-viewport">
       <div style={{ height: virtualizer.getTotalSize(), position: "relative", width: "100%" }}>
         {virtualizer.getVirtualItems().map((virtualRow) => (
@@ -39,5 +51,6 @@ export function VirtualizedRequestList({ requests }: Props) {
         ))}
       </div>
     </div>
+    </>
   );
 }
