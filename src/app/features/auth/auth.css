@@ -1,0 +1,70 @@
+/* src/app/features/auth/auth.css */
+.login-page {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--space-6);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+  animation: dialog-in 0.2s ease backwards;
+}
+
+.login-card h2 {
+  margin-bottom: var(--space-1);
+}
+
+.login-subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 var(--space-5) 0;
+}
+
+.login-submit {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.login-hints {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.login-hints__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.login-hints__title span {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+.login-hints ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.login-hints__role {
+  display: inline-block;
+  width: 90px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
