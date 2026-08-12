@@ -32,10 +32,12 @@ export function RequestDetailPage() {
       <div className="page-header">
         <h3>Request detail</h3>
       </div>
-
+      <div className="request-detail-card">
       <RequestDetail request={request} requesterName={requesterName} assigneeName={assigneeName} />
 
       {session && <RequestActions request={request} session={session} />}
+      </div>
+      
 
       <div className="message-section">
         <h4>Activity</h4>
