@@ -3,15 +3,36 @@
   padding: var(--space-5) var(--space-6);
 }
 
-.app-shell header {
+.header-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-  padding-bottom: var(--space-4);
-  margin-bottom: var(--space-6);
+  gap: var(--space-2);
+  width: 100%;
   border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-6);
+}
+
+.app-shell header,
+main {
+  
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 960px;
+}
+.app-shell header{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  padding-bottom: var(--space-4);
+  
 }
 
 .app-shell h1 {
@@ -25,19 +46,17 @@
 }
 
 .app-nav a {
+  padding: var(--space-1) var(--space-3);
   color: var(--color-text-muted);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
-  
-  padding: var(--space-1) var(--space-3);
-  
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .app-nav a:hover {
-  color: var(--color-text);
   background: var(--color-surface-inset);
+  color: var(--color-text);
 }
 
 .app-nav a.active {
@@ -54,7 +73,8 @@ main {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  /* max-width: 960px; */
+  
+  
 }
 
 .page-header {
@@ -64,3 +84,16 @@ main {
   gap: var(--space-4);
 }
 
+@media (max-width: 640px) {
+  .app-shell header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .app-nav,
+  .app-controls {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
