@@ -23,7 +23,9 @@ export function AppShell({ children }: Props) {
 
   return (
     <div className="app-shell">
+      <div className="header-bar">
       <header>
+        
         <h1>Deskline</h1>
         <nav className="app-nav">
           {session && (
@@ -54,6 +56,7 @@ export function AppShell({ children }: Props) {
           
         </div>
       </header>
+      </div>
       <main>{children}</main>
     </div>
   );

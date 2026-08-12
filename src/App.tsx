@@ -7,7 +7,7 @@ import "./app/shared/styles/buttons.css";
 import "./app/shared/styles/forms.css";
 import "./app/shared/styles/states.css";
 import "./app/features/requests/requests.css";
-//import "./app/features/auth/auth.css";
+import "./app/features/auth/auth.css";
 import "./app/shared/styles/motion.css";
 //import "./app/shared/theme.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
