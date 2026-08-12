@@ -1,12 +1,19 @@
-/* Badges */
+/* ============================================
+   BADGES
+   ============================================ */
 .badge {
   display: inline-block;
   padding: 2px 10px;
-  border-radius: 999px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.6;
   transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+[data-theme="dark"] .badge {
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .badge--status-open      { background: #dbeafe; color: #1e40af; }
@@ -23,18 +30,118 @@
 .badge--category-facilities { background: #d1fae5; color: #065f46; }
 .badge--category-access     { background: #fce7f3; color: #9d174d; }
 
-/* Request list */
+/* ============================================
+   LIST LEGEND
+   ============================================ */
+.request-list-legend {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+  padding-right: var(--space-5);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 70px;
+}
+
+.legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-dot--status { background: #3654e0; }
+.legend-dot--priority { background: #dc6803; }
+.legend-dot--category { background: #7f56d9; }
+
+/* ============================================
+   REQUEST LIST (My Requests — normal flow)
+   ============================================ */
 .request-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
   container-type: inline-size;
   container-name: request-list;
 }
-/* requests.css */
+
+/* ============================================
+   REQUEST ROW (shared by RequestList and VirtualizedRequestList via RequestRow)
+   ============================================ */
+@keyframes row-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.request-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  min-height: 60px;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  animation: row-in 0.2s ease backwards;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.request-row:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+@container request-list (max-width: 480px) {
+  .request-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.request-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.request-title:hover {
+  text-decoration: underline;
+}
+
+.request-badges {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.request-badges > * {
+  display: flex;
+  justify-content: center;
+  width: 70px;
+}
+
+
+/* ============================================
+   VIRTUALIZED LIST (Queue)
+   ============================================ */
 .virtual-list-viewport {
   height: 600px;
   overflow-y: auto;
@@ -47,81 +154,68 @@
 .virtual-row-wrapper {
   padding-bottom: var(--space-2);
 }
-/* no .request-row overrides — inherits the same card styling used by My Requests */
 
-.request-row {
+/* ============================================
+   REQUEST DETAIL
+   ============================================ */
+   .request-detail-top {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  align-items: flex-start;
   flex-wrap: wrap;
-  transition: border-color 0.15s ease;
+  gap: var(--space-5);
 }
-
-.request-row:hover {
-  border-color: var(--color-accent);
-}
-
-@container request-list (max-width: 480px) {
-  .request-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-.request-title {
-  color: var(--color-text);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.request-title:hover {
-  text-decoration: underline;
-}
-
-.request-badges {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-}
-
-.back-link {
-  display: inline-block;
-  color: var(--color-text-muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  margin-bottom: var(--space-4);
-}
-
-.back-link:hover {
-  color: var(--color-text);
-}
-
 .request-detail {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-5);
-  background: var(--color-surface);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  margin-top: var(--space-2);
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  /* box-shadow: var(--shadow-md); */
+}
+.request-detail-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5);
+  margin-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  animation: dialog-in 0.2s ease backwards;
 }
 
-.request-detail h3 {
-  font-size: 1.2rem;
-  
+
+.request-badges-meta {
+  display: flex;
+  gap: var(--space-5);
+  margin: var(--space-2) 0 0 0;
 }
 
-.request-actions {
-  margin-top: var(--space-4);
+.request-badges-meta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-/* requests.css */
+.request-badges-meta dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.request-badges-meta dd {
+  margin: 0;
+}
+
+
+
 .request-meta {
   display: flex;
   flex-wrap: wrap;
@@ -149,17 +243,42 @@
   color: var(--color-text);
 }
 
+/* ============================================
+   REQUEST ACTIONS
+   ============================================ */
+.request-actions {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.reassign-select {
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+/* ============================================
+   MESSAGE THREAD
+   ============================================ */
 .message-section {
   margin-top: var(--space-6);
 }
 
 .message-thread {
-  list-style: none;
-  margin: 0 0 var(--space-4) 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  list-style: none;
+  margin: 0 0 var(--space-4) 0;
+  margin-top: var(--space-4);
+  padding: 0;
 }
 
 .message {
@@ -181,6 +300,11 @@
   font-weight: 600;
 }
 
+.message__time {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+}
+
 .message__body {
   margin: 0;
 }
@@ -189,41 +313,27 @@
   margin-top: var(--space-4);
 }
 
-
-.request-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-}
-
-.reassign-select {
-  padding: 6px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-}
-/* Confirm dialog */
+/* ============================================
+   CONFIRM DIALOG
+   ============================================ */
 .dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
   animation: fade-in 0.15s ease;
-  z-index: 100;
 }
 
 .dialog {
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  padding: var(--space-5);
   min-width: 280px;
   max-width: 400px;
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   animation: dialog-in 0.15s ease;
 }
 
@@ -242,4 +352,36 @@
 @keyframes dialog-in {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
+}
+
+/* ============================================
+   BACK LINK
+   ============================================ */
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.back-link:hover {
+  color: var(--color-text);
+}
+
+/* requests.css */
+.message__time {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+}
+@media (max-width: 480px) {
+  .request-list-legend {
+    font-size: 0.7rem;
+    gap: var(--space-2);
+  }
+}
+@media (max-width: 480px) {
+  .request-row {
+    padding: var(--space-3);
+  }
 }
