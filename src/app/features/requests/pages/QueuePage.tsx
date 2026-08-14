@@ -42,8 +42,10 @@ export function QueuePage() {
         onPriorityChange={setPriority}
         onCategoryChange={setCategory}
         onSearchChange={setSearch}
-      />
-      <AssigneeFilter value={assignee} onChange={setAssignee} />
+      >
+        <AssigneeFilter value={assignee} onChange={setAssignee} />
+      </RequestFilters>
+
       {requests.length === 0 ? (
         <EmptyState message="The queue is empty." />
       ) : visibleRequests.length === 0 ? (

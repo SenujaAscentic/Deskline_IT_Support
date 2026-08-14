@@ -1,4 +1,4 @@
-// src/app/shared/api/types.ts
+
 import type { Status, Priority, Category } from "../../features/requests/types";
 import type { Role } from "../types";
 

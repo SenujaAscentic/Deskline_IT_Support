@@ -1,4 +1,4 @@
-// src/shared/useTheme.ts
+
 import { useEffect, useState } from "react";
 
 type Theme = "light" | "dark";

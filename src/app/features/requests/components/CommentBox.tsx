@@ -1,6 +1,7 @@
 // src/app/features/requests/components/CommentBox.tsx
 import { useState } from "react";
 import { useAddMessageMutation } from "../hooks/useAddMessageMutation";
+import { ApiError } from "../../../shared/api/client";
 
 type Props = {
   requestId: string;
@@ -9,11 +10,18 @@ type Props = {
 
 export function CommentBox({ requestId, canComment }: Props) {
   const [body, setBody] = useState("");
-  const { mutate, isPending, isError } = useAddMessageMutation(requestId);
+  const { mutate, isPending , error } = useAddMessageMutation(requestId);
 
   if (!canComment) {
     return null; // thread is read-only when closed/cancelled — no comment box at all
   }
+
+  const errorMessage = 
+  error instanceof ApiError 
+    ? error.status === 403
+      ? "You can't comment on this request."
+      : "Couldn't send your comment. Try again."
+    : null;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,7 +44,7 @@ export function CommentBox({ requestId, canComment }: Props) {
           disabled={isPending}
         />
       </div>
-      {isError && <p className="field-error">Couldn't send your comment. Try again.</p>}
+      {errorMessage && <p className="field-error">{errorMessage}</p>}
       <button className="btn btn--primary" type="submit" disabled={isPending || !body.trim()}>
         {isPending ? "Sending…" : "Send"}
       </button>

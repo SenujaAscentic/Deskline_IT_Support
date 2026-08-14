@@ -9,6 +9,7 @@ import { NoMatchesState } from "../../../shared/components/NoMatchesState";
 import { Link } from "react-router-dom";
 import { useRequestsQuery } from "../hooks/useRequestsQuery";
 import {useSession} from "../../auth/useSession";
+import { SortControl } from "../components/SortControl";
 
 export function MyRequestsPage() {
 
@@ -20,10 +21,12 @@ export function MyRequestsPage() {
     priority,
     category,
     search,
+    sort,
     setStatus,
     setPriority,
     setCategory,
     setSearch,
+    setSort,
     visibleRequests,
   } = useRequestFilters(requests);
 
@@ -47,7 +50,10 @@ export function MyRequestsPage() {
         onPriorityChange={setPriority}
         onCategoryChange={setCategory}
         onSearchChange={setSearch}
-      />
+      >
+      <SortControl value={sort} onChange={setSort}/>
+      </RequestFilters>
+
       {requests.length === 0 ? (
         <EmptyState message="You have no requests yet"/>
 

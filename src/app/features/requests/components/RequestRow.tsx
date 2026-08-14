@@ -12,7 +12,7 @@ export function RequestRow({ request: r }: Props) {
       <Link to={`/requests/${r.id}`} className="request-title">
         {r.title}
       </Link>
-      <div className="request-badges">
+      <div className="request-badges">        
         <Badge variant={{ kind: "status", value: r.status }}>{r.status}</Badge>
         <Badge variant={{ kind: "priority", value: r.priority }}>{r.priority}</Badge>
         <Badge variant={{ kind: "category", value: r.category }}>{r.category}</Badge>

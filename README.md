@@ -318,16 +318,83 @@ still not adopted, for the same reasons as Day 4 — the form is small
 enough that hand-written validation remains equally clear with zero
 dependencies.
 
-## Known limitations (expected at this stage)
+### Day 6
 
-- No route protection yet — any role can visit any of the five routes
-  directly by URL; Day 6 adds real login, logout, and protected routing.
-- The dev role switcher (`DevRoleSwitcher`) is temporary scaffolding,
-  deleted once real login exists.
-- `requestsDb`/`messagesDb` are in-memory and reset on a full page
-  reload or dev-server restart — expected for a mock data layer; a real
-  backend would persist this properly.
-- Comment/message deletion is intentionally out of scope — the spec
-  treats the activity thread as an append-only record, consistent with
-  how real support-desk tools treat ticket history, and no action rule
-  in section 5 mentions deleting or editing messages for any role.
+- **Login/logout**: real `POST /login` mutation, storing a genuine
+  server-issued session (replacing the Day 5 dev stub's hardcoded array).
+  Logout calls the same `setSession(null)` mechanism built in Day 5,
+  which already clears the query cache — no new logic needed there.
+- **Protected routes**: a single `ProtectedRoute` wrapper handles both
+  "must be logged in" and "must be one of these roles," redirecting an
+  unauthenticated visitor to `/login` and a wrongly-roled visitor to
+  their own correct home route (not `/login`, since they're not actually
+  unauthenticated — just in the wrong place).
+- **Three-role UI**: nav links are now conditional on role — a requester
+  never sees "Queue," staff never see "My Requests" or "New Request,"
+  matching the routing table exactly rather than showing every link to
+  everyone and relying on redirects alone.
+- **403 feedback**: mutations surface `ApiError`'s status distinctly —
+  a 403 shows a calm "you don't have permission" message, other failures
+  show a generic retry message. Verified server-side enforcement
+  independent of the UI by calling a forbidden action directly via
+  `fetch` in the console, confirming the real 403 comes from the handler
+  itself, not just from a hidden button.
+- **Retired `DevRoleSwitcher`**: real login now fully covers what it was
+  standing in for.
+
+### Day 7
+
+**Checklist run.** Walked every item in section 11's assessment criteria
+against the app directly rather than assuming: empty/no-matches/error+
+Retry/invalid-form/forbidden-action states all re-verified live; a full
+lifecycle dry run (login → create → comment → cancel → role switch →
+Queue at scale → forbidden-action 403) run start to finish; cross-role
+UI re-checked after the polish pass below, since a lot changed visually
+since Day 6.
+
+**UI polish pass** (no new features — refining existing screens):
+- Redesigned the login page as a centered card matching the app's
+  elevation system, replacing the original left-aligned placeholder
+  layout, with a cleaner labeled list for demo account credentials.
+- Fixed a nested-card bug on the request detail page (`RequestDetail`
+  and its page wrapper were both rendering box styling, producing a
+  visible box-inside-a-box). Resolved by having `RequestDetail` render
+  as a fragment — pure content, no box of its own — so exactly one
+  element owns the card's border/shadow/background.
+- Rebalanced the detail card: badges on the left, requester/assignee on
+  the right, using the card's full width instead of everything stacked
+  in one narrow column. Added a status-aware colored left border
+  (omitted for "open," since it's the default, unremarkable state — an
+  accent there would visually compete with pending/closed/cancelled for
+  no reason).
+- Added a fixed-width badge-slot system plus a column legend above both
+  My Requests and Queue's lists, closing a real usability gap where
+  badge meaning depended entirely on memorizing color and position with
+  no on-screen explanation.
+- Fixed a layout bug where neither `main` nor the header had an actual
+  `max-width`, causing content to stretch full-bleed on wide screens and
+  the header/body to visually misalign; both now share one constrained,
+  centered width.
+- Added an elevation system (`--shadow-sm/md/lg`, separate light/dark
+  values since a shadow tuned for a light background nearly disappears
+  on a dark one), a smooth cross-fade transition when switching themes
+  (scoped to color-related properties specifically, not a blanket `*`
+  transition, to avoid smoothing unrelated things like hover-lift
+  transforms), a custom scrollbar for the virtualized Queue list (driven
+  by the same color tokens, so it automatically re-themes in dark mode
+  rather than falling back to the browser's untheme-aware default), and
+  a sticky header so navigation/theme controls stay reachable while
+  scrolling a long list.
+- Distinct error styling (icon pill, red border, brief shake micro-
+  interaction) for validation and 403 feedback, replacing plain colored
+  text — applied consistently across the login form, create-request
+  form, and action/comment error messages via the shared `.field-error`
+  class.
+- Added a static, inline-styled loading fallback directly in
+  `index.html` (not a React component) so a slow connection shows a
+  visible loading message instead of a blank screen during the window
+  before JavaScript has loaded and React has mounted — deliberately
+  hardcoded colors here, since the token system itself hasn't loaded yet
+  at that point. Removed the unused Vite-scaffold `index.css`, since
+  `base.css` already owns global element defaults.
+

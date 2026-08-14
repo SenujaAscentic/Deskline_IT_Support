@@ -1,4 +1,4 @@
-// src/app/shared/api/mappers.ts
+
 import type { Request, Message } from "../../features/requests/types";
 import type { ApiRequestListItem, ApiRequestDetail, ApiMessage } from "./types";
 

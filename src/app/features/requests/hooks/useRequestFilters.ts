@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { Request, Status, Priority, Category } from "../types";
 import { filterRequests } from "../filterRequests";
 import { useSearchParams } from "react-router-dom";
+import { sortRequests, type SortOption } from "../sortRequests";
 
 export function useRequestFilters(requests: Request[]) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,17 +21,24 @@ export function useRequestFilters(requests: Request[]) {
   const [priority, setPriority] = useState<Priority | "all">("all");
   const [category, setCategory] = useState<Category | "all">("all");
   const [search, setSearch] = useState("");
-  const visibleRequests =  useMemo(() => filterRequests(requests, { status, priority, category, search }), [requests, status, priority, category, search]);
+  const [sort, setSort] = useState<SortOption>("updatedAt-desc");
+  
+  const visibleRequests = useMemo(() => {
+    const filtered = filterRequests(requests, { status, priority, category, search });
+    return sortRequests(filtered, sort);
+  }, [requests, status, priority, category, search, sort]);
 
   return {
     status,
     priority,
     category,
     search,
+    sort,
     setStatus,
     setPriority,
     setCategory,
     setSearch,
+    setSort,
     visibleRequests,
   };
 }
