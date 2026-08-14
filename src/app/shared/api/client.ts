@@ -1,4 +1,4 @@
-// src/app/shared/api/client.ts
+
 import { getSession } from "../../features/auth/session";
 
 export class ApiError extends Error {

@@ -149,6 +149,28 @@
   border-radius: var(--radius-md);
   container-type: inline-size;
   container-name: request-list;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.virtual-list-viewport::-webkit-scrollbar {
+  width: 10px;
+}
+
+.virtual-list-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.virtual-list-viewport::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 999px;
+  border: 2px solid var(--color-bg);
+  background-clip: padding-box;
+}
+
+.virtual-list-viewport::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-text-muted);
 }
 
 .virtual-row-wrapper {
